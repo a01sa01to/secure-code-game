@@ -37,7 +37,7 @@ class TaxPayer:
 
         # defends against path traversal attacks
         if not accept_path(prof_picture_path, base_dir):
-            prof_picture_path = os.path.join(base_dir, 'assets', 'prof_picture.png')
+            return os.path.join(base_dir, 'assets', 'prof_picture.png')
 
         with open(prof_picture_path, 'rb') as pic:
             picture = bytearray(pic.read())
@@ -57,7 +57,7 @@ class TaxPayer:
 
         # defends against path traversal attacks
         if not accept_path(path, base_dir):
-            path = os.path.join(base_dir, 'assets', 'tax_form.pdf')
+            return os.path.join(base_dir, 'assets', 'tax_form.pdf')
 
         with open(path, 'rb') as form:
             tax_data = bytearray(form.read())
