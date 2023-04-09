@@ -89,9 +89,9 @@ class DB_CRUD_ops(object):
             # a block list or restricted characters that should not be presented in user-supplied input
             restricted_chars = ";%&^!#-"
             # checks if input contains characters from the block list
-            has_restricted_char = any([char in query for char in restricted_chars])
+            has_restricted_char = any([char in stock_symbol for char in restricted_chars])
             # checks if input contains a wrong number of single quotes against SQL injection
-            correct_number_of_single_quotes = query.count("'") == 0
+            correct_number_of_single_quotes = stock_symbol.count("'") == 0
 
             # performs the checks for good cyber security and safe software against SQL injection
             if has_restricted_char or not correct_number_of_single_quotes:
@@ -127,13 +127,13 @@ class DB_CRUD_ops(object):
             cur = db_con.cursor()
 
             res = "[METHOD EXECUTED] get_stock_price\n"
-            query = "SELECT price FROM stocks WHERE symbol = '" + stock_symbol + "'"
-            res += "[QUERY] " + query + "\n"
+            query = "SELECT price FROM stocks WHERE symbol = ?"
+            res += "[QUERY] " + query.replace("?", f"'{stock_symbol}'") + "\n"
             if ';' in query:
                 res += "[SCRIPT EXECUTION]\n"
-                cur.executescript(query)
+                cur.executescript(query, (stock_symbol,))
             else:
-                cur.execute(query)
+                cur.execute(query, (stock_symbol,))
                 query_outcome = cur.fetchall()
                 for result in query_outcome:
                     res += "[RESULT] " + str(result) + "\n"
