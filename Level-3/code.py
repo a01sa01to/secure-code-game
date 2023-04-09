@@ -12,6 +12,11 @@ def source():
 # Unrelated to the exercise -- Ends here -- Please ignore
 
 
+def accept_path(path, base_dir):
+    path = os.path.realpath(os.path.join(base_dir, path))
+    return os.path.commonprefix([path, base_dir]) == base_dir
+
+
 class TaxPayer:
 
     def __init__(self, username, password):
@@ -26,13 +31,13 @@ class TaxPayer:
         if not path:
             pass
 
-        # defends against path traversal attacks
-        if path.startswith('/') or path.startswith('..'):
-            return None
-
         # builds path
         base_dir = os.path.dirname(os.path.abspath(__file__))
         prof_picture_path = os.path.normpath(os.path.join(base_dir, path))
+
+        # defends against path traversal attacks
+        if not accept_path(prof_picture_path, base_dir):
+            prof_picture_path = os.path.join(base_dir, 'assets', 'prof_picture.png')
 
         with open(prof_picture_path, 'rb') as pic:
             picture = bytearray(pic.read())
@@ -46,6 +51,13 @@ class TaxPayer:
 
         if not path:
             raise Exception("Error: Tax form is required for all users")
+
+        # builds path
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # defends against path traversal attacks
+        if not accept_path(path, base_dir):
+            path = os.path.join(base_dir, 'assets', 'tax_form.pdf')
 
         with open(path, 'rb') as form:
             tax_data = bytearray(form.read())
